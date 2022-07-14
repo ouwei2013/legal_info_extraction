@@ -17,12 +17,6 @@ class LegalInfoExtractor:
 
     def __init__(self, ner_model_path) -> None:
         self.ner = spacy.load(ner_model_path)
-        self.doc_wrapper = Chinese()
-
-        self.rqst_patn1 = re.compile(
-            '(请求|要求|申请).{,5}(撤销|判令|确认|(执行[^人])|责成|判决|责令)')
-        self.rqst_patn2 = re.compile(
-            '提出(撤销|判令|责令|确认|执行|责成|判决|撤回).{,20}(请求|要求|申请|起诉)')
 
     def _combine(self, docs):
         """transformer先对句子进行NER识别。本函数把处理后的句子组装回原来的长文本
@@ -37,14 +31,18 @@ class LegalInfoExtractor:
         orig_doc = ''
         orig_ents = []
         offset = 0
+        rqst_patn1 = re.compile(
+            '(请求|要求|申请).{,5}(撤销|判令|确认|(执行[^人])|责成|判决|责令)')
+        rqst_patn2 = re.compile(
+            '提出(撤销|判令|责令|确认|执行|责成|判决|撤回).{,20}(请求|要求|申请|起诉)')
         for idx, d in enumerate(docs):
             offset = len(orig_doc)
             orig_doc = orig_doc+d.text
 
             # 根据正则表达式，判断是否是"诉求"
-            m = self.rqst_patn1.search(d.text)
+            m = rqst_patn1.search(d.text)
             if not m:
-                m = self.rqst_patn2.search(d.text)
+                m = rqst_patn2.search(d.text)
             if m:
                 st, _ = m.span()
                 d.ents = [d.char_span(st, len(d.text)-1, '诉求')]
@@ -60,7 +58,7 @@ class LegalInfoExtractor:
                         label = '理由'
                 if label == '诉求':  # 分析NER模型结果，发现它经常把诉求和行政处罚决定搞混
                     # 所以对识别出来的“诉求“，也进行正则表达式匹配，看看是不是真的是诉求
-                    if not self.rqst_patn1.search(d.text):
+                    if not rqst_patn1.search(d.text):
                         label = '行政处罚决定'
                 if '理由' in label:  # 分析NER模型结果，发现它经常把带有”是否“ 和'发生法律效力'的句子识别称理由，实际上它们不是理由
                     if '是否' in ent_txt or idx == len(docs)-1 or '发生法律效力' in ent_txt:
