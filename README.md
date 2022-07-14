@@ -2,18 +2,20 @@
 
 ### Quick Start 
 
-- from legal_info_extraction.util import LawInfoExtractor as LIE  
-- doc='原告黄某。被告市城管局。关于强制拆迁一案，本院认为，黄某行为不当'  
-- model = LIE('model_path')  
-- result = model.extract(doc)  
-- print(result)  
+```
+from legal_info_extraction.util import LawInfoExtractor as LIE  
+doc='原告黄某。被告市城管局。关于强制拆迁一案，本院认为，黄某行为不当'  
+model = LIE('model_path')  
+result = model.extract(doc)  
+print(result)  
+
 {
   "原告":[[2,4,"原告", "黄某" ]],
   "被告":[[7,11, "行政主体","市城管局" ]] ,
   "基本信息":[[ 14,18,"案由" "强制拆迁",]],
   "本院认为":[[ 26,31, "理由" "黄某行为不当",]],
 }
-
+```  
 
 
 ### 大致方法
