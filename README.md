@@ -2,8 +2,11 @@
 
 ### Quick Start 
 
+安装：进入项目根目录，使用 pip install . 
+安装好后，就可以调用拉
+
 ```
-from legal_info_extraction.util import LawInfoExtractor as LIE  
+from legal_info_extraction.extract import LegalInfoExtractor as LIE  
 doc='原告黄某。被告市城管局。关于强制拆迁一案，本院认为，黄某行为不当'  
 model = LIE('model_path')  
 result = model.extract(doc)  
