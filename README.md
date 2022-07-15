@@ -2,7 +2,7 @@
 
 ### Quick Start 
 
-安装：进入项目根目录，使用 pip install . 
+安装：进入项目根目录，输入 “ pip install . "，进行安装 
 安装好后，就可以调用拉
 
 ```
