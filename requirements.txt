@@ -1,2 +1,5 @@
 spacy==3.3.0
 spacy[transformers,cuda111]
+numpy 
+bs4
+regex

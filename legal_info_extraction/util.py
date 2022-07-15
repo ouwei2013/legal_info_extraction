@@ -3,7 +3,6 @@ import os
 import regex as re
 
 import numpy as np
-import pandas as pd
 import spacy
 from bs4 import BeautifulSoup
 from spacy import displacy
@@ -76,11 +75,11 @@ def filter(rows):
     return filtered
 
 
-def create_spacy_doc_from_ents(doc, ents):
+def create_spacy_doc_from_ents(doc, doc_ents):
     doc = spacy_zh(doc)  # 把原始文本包装成spacy的doc类，方便处理
     all_ent_st_idx = []
     ents = []
-    for ent in ents:
+    for ent in doc_ents:
         if ent[0] not in all_ent_st_idx:
             all_ent_st_idx.append(ent[0])
             ents.append(Span(doc, ent[0], ent[1], ent[2]))

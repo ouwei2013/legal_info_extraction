@@ -3,7 +3,6 @@ import os
 import regex as re
 
 import numpy as np
-import pandas as pd
 import spacy
 from bs4 import BeautifulSoup
 from spacy import displacy
@@ -61,7 +60,7 @@ class LegalInfoExtractor:
                     if not rqst_patn1.search(d.text):
                         label = '行政处罚决定'
                 if '理由' in label:  # 分析NER模型结果，发现它经常把带有”是否“ 和'发生法律效力'的句子识别称理由，实际上它们不是理由
-                    if '是否' in ent_txt or idx == len(docs)-1 or '发生法律效力' in ent_txt:
+                    if '是否' in ent_txt  or '发生法律效力' in ent_txt:
                         continue
 
                 st = ent.start + offset
@@ -126,13 +125,13 @@ class LegalInfoExtractor:
                     st, ed = re.search(
                         '(?<=%s[^\u4e00-\u9fa5]{,3})[\u4e00-\u9fa5]{1,20}' % re.escape(m.group()), txt).span()
                     applicants.append(
-                        [st+sen.start, ed+sen.end, '原告', txt[st:ed]])
+                        [st+sen.start, ed+sen.start, '原告', txt[st:ed]])
                     m = re.search(
                         '(?<=简称[^\u4e00-\u9fa5]{,3})[\u4e00-\u9fa5]{2,20}', txt)
                     if m:
                         st, ed = m.span()
                         applicants.append(
-                            [st+sen.start, ed+sen.end, '原告简称', txt[st:ed]])
+                            [st+sen.start, ed+sen.start, '原告简称', txt[st:ed]])
                 else:
                     applicants = applicants+[[ent.start, ent.end, ent.label_, ent.text]
                                              for ent in sen.ents if ent.label_ == '行政主体']
@@ -158,14 +157,14 @@ class LegalInfoExtractor:
                     st, ed = re.search(
                         '(?<=%s[^\u4e00-\u9fa5]{,3})[\u4e00-\u9fa5]{1,20}' % re.escape(m.group()), txt).span()
                     defenders.append(
-                        [st+sen.start, ed+sen.end, '被告', txt[st:ed]])
+                        [st+sen.start, ed+sen.start, '被告', txt[st:ed]])
                     m = re.search(
                         '(?<=简称[^\u4e00-\u9fa5]{,3})[\u4e00-\u9fa5]{2,20}', txt)
                     if m:
                         st, ed = m.span()
                         # tmp=list(d.ents)
                         defenders.append(
-                            [st+sen.start, ed+sen.end, '被告简称', txt[st:ed]])
+                            [st+sen.start, ed+sen.start, '被告简称', txt[st:ed]])
                 else:
                     defenders = defenders + \
                         [[ent.start, ent.end, ent.label_, ent.text]
@@ -284,7 +283,7 @@ class LegalInfoExtractor:
                     if label in ['行为', '理由']:  # 法院意见区域内的“行为”，一般都是理由
                         label = '理由'
                     # ner模型识别的理由可能只截取了一句话中间的部分信息，我们发现对把理由从句中扩展到句尾，不容易丢失信息
-                    st, ed, label, txt = expand(doc, [st, ed, label, txt])
+                        st, ed, label, txt = expand(doc.text, [st, ed, label, txt])
                 rows.append([st, ed, label, txt])
             rows = filter(rows)
             vdcts[k] = rows
